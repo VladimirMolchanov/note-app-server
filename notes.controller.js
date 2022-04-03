@@ -46,7 +46,7 @@ async function removeNote(id) {
         console.log(chalk.red('Not find id notes'))
     } else {
         await fs.writeFile(notesPath, JSON.stringify(notes.filter(note => note.id !== id)))
-        console.log(chalk.bgGreen('Note was remove!'))
+        console.log(chalk.bgGreen(`Note with id=${id} has been removed`))
     }
 }
 
