@@ -28,12 +28,28 @@ async function getNotes() {
 async function printNotes() {
     const notes = await getNotes()
 
-    console.log(chalk.bgBlue('Here is the list of notes:'))
-    notes.forEach(note => {
-        console.log(chalk.blue(note.title))
-    })
+    if (notes.length !== 0) {
+        console.log(chalk.bgBlue('Here is the list of notes:'))
+        notes.forEach(note => {
+            console.log(`${chalk.cyan(note.id)} ${chalk.blue(note.title)}`)
+        })
+    } else {
+        console.log(chalk.bgBlue('Empty notes list'))
+    }
+
+}
+
+async function removeNote(id) {
+    const notes = await getNotes()
+    const index = notes.findIndex(note => note.id === id)
+    if (index === -1) {
+        console.log(chalk.red('Not find id notes'))
+    } else {
+        await fs.writeFile(notesPath, JSON.stringify(notes.filter(note => note.id !== id)))
+        console.log(chalk.bgGreen('Note was remove!'))
+    }
 }
 
 module.exports = {
-    addNote, printNotes
+    addNote, printNotes, removeNote
 }
