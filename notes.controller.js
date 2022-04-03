@@ -36,7 +36,6 @@ async function printNotes() {
     } else {
         console.log(chalk.bgBlue('Empty notes list'))
     }
-
 }
 
 async function removeNote(id) {
@@ -50,6 +49,18 @@ async function removeNote(id) {
     }
 }
 
+async function updateNote(id, title) {
+    const notes = await getNotes()
+    const index = notes.findIndex(note => note.id === id)
+    if (index === -1) {
+        console.log(chalk.red('Not find id notes'))
+    } else {
+        notes[index].title = title
+        await fs.writeFile(notesPath, JSON.stringify(notes))
+        console.log(chalk.bgGreen(`Note with id=${id} has been removed`))
+    }
+}
+
 module.exports = {
-    addNote, printNotes, removeNote, getNotes
+    addNote, printNotes, removeNote, getNotes, updateNote
 }
