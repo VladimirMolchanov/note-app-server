@@ -1,4 +1,5 @@
 const http = require('http')
+const express = require('express')
 const chalk = require("chalk")
 const path = require("path")
 const fs = require('fs/promises')
@@ -7,36 +8,20 @@ const {addNote} = require("./notes.controller");
 const port = 3000
 const basePath = path.join(__dirname, 'pages')
 
-const server = http.createServer(async (req, res) => {
-    if (req.method === 'GET') {
-        const content = await fs.readFile(path.join(basePath, 'index.html'))
-        // res.setHeader('Content-Type', 'text/html')
-        res.writeHead(200, {
-            'Content-Type': 'text/html'
-        })
-        res.end(content)
-    } else if (req.method === 'POST') {
-        const body = []
-        res.writeHead(200, {
-            'Content-Type': 'text/plane; charset=utf-8'
-        })
+const app = express()
+app.use(express.urlencoded({
+    extended: true
+}))
 
-        req.on('data', data => {
-            body.push(Buffer.from(data))
-        })
-
-        req.on('end', () => {
-            const title = body
-                .toString()
-                .split('=')[1]
-                .replaceAll('+', ' ')
-            addNote(title)
-
-            res.end(`Title = ${title}`)
-        })
-    }
+app.get('/', (req, res) => {
+    res.sendFile(path.join(basePath, 'index.html'))
 })
 
-server.listen(port, () => {
+app.post('/', async (req, res) => {
+    await addNote(req.body.title)
+    res.sendFile(path.join(basePath, 'index.html'))
+})
+
+app.listen(port, () => {
     console.log(chalk.green(`Server has been started on port ${port}...`))
 })
